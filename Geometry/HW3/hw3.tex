@@ -1,0 +1,159 @@
+% Scribe template is a combination of 16831 and 10725. Thanks to those TAs!
+\documentclass[11pt]{article}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{epsfig}
+\usepackage[tight]{subfigure}
+\usepackage{hyperref}
+\usepackage{listings}
+
+
+\newcommand{\handout}[5]{
+  \noindent
+  \begin{center}
+  \framebox{
+    \vbox{
+      \hbox to 5.78in { {#1} \hfill #2 }
+      \vspace{4mm}
+      \hbox to 5.78in { {\Large \hfill #5  \hfill} }
+      \vspace{2mm}
+      \hbox to 5.78in { {\em #3 \hfill #4} }
+    }
+  }
+  \end{center}
+  \vspace*{4mm}
+}
+
+\newcommand{\lecture}[5]{\handout{#1}{#2}{#3}{#4}{#5}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{assumption}[theorem]{Assumption}
+
+% 1-inch margins, from fullpage.sty by H.Partl, Version 2, Dec. 15, 1988.
+\topmargin 0pt
+\advance \topmargin by -\headheight
+\advance \topmargin by -\headsep
+\textheight 8.9in
+\oddsidemargin 0pt
+\evensidemargin \oddsidemargin
+\marginparwidth 0.5in
+\textwidth 6.5in
+
+\parindent 0in
+%\parskip 1.5ex
+\renewcommand{\baselinestretch}{1.1}
+
+\begin{document}
+\newcommand{\defeq}[0]{\ensuremath{\stackrel{\triangle}{=}}}
+\def\x{\mathbf{x}}
+\def\w{\mathbf{w}}
+\def\K{\mathbf{K}}
+\lecture{{\bf 16-822}: Geometry-based Methods in Vision (F17) }{Released: Oct-25., Due: Nov 15th}{Lecturer: Martial Hebert}{TA: Aayush Bansal}{Homework 3}
+
+
+\section{Affine cameras (35 Points)}
+In class, we have mostly focused on perspective cameras. For this part of the homework, we consider cameras with center lying on the plane at infinity, especially {\it affine cameras}. An affine camera is one that has a camera matrix of the form $M=\left[A \,|\, b\right]$ in which A is singular and the last row of M is of the form $(0, 0, 0, 1)$. The following questions explore affine cameras a little more in depth.
+\begin{itemize}
+\item What happens to points on a plane perpendicular to the image plane that also passes through the world origin?
+\item Given a set of points $X_i$ in $3D$, and their projection $x_i$ in the image, what is the projection of the centroid of $X_i$'s? (no equations, just 1 short line.)
+\item Show that an affine camera maps parallel world lines to parallel image lines; i.e., when using an affine camera, parallel lines in $3D$ project to parallel lines in image plane.\footnote{Actually, the converse is also true; if the camera preserves parallelism of lines, then it is an affine cameras.}
+\item Show that for parallel lines mapped by an affine camera, the ratio of lengths on line segments is an invariant.
+\end{itemize}
+For the following questions, consider a system of $2$ affine cameras, with camera matrix $M$ and $M'$: (Last row of each camera matrix is of the form $(0, 0, 0, 1)$.)
+\begin{itemize}
+\item Show that epipolar planes (and lines) are parallel.
+\item Show that the affine fundamental matrix $F$ defined by two affine cameras is invariant to an affine transformation of the world coordinates.
+\end{itemize}
+
+
+\section{Two camera geometry (10 + 20 + 10 Points)}
+\subsection{2 singular values of $E$ are equal (10 Points)}
+
+Let $E$ be the {\em essential} matrix of a pair of cameras. We know that $E$ is singular so that one of its singular value is zero. 
+Show that the other 2 singular values are equal. (Remember that the singular values of a matrix $A$ are the square roots of the {\em eigenvalues}
+of the matrix $AA^T$. Apply this property to $E$ by apply $EE^T$ to the appropriate vectors to figure out what the eigenvalues are.)
+
+\subsection{Recovering $R$, $t$ from $E$ (20 Points)}
+We address the problem of recovering the rotation $R$ and translation $t$ from
+the essential matrix $E = [t]_\times R$.
+\begin{enumerate}
+\item Show how to recover $t$ from $E$ (one single equation).
+\item Show (using the properties of the essential matrix stated in class), that
+the SVD of $E$ is of the form: $E = U\texttt{diag}(1,1,0)V^T$.
+\item Show that the two matrices $R_1 = UWV^T$ and $R_2 = UW^TV^T$ are
+solutions in $R$, where $W = [0\ {-1}\ 0;\ 1\ 0\ 0;\ 0\ 0\ 1]$.
+\item Why is there 2 solutions in $R$ (in words or drawing)?
+\end{enumerate}
+
+\subsection{Extra Credits - $\Pi$ $\|$ to the baseline (10 Points) }
+Consider a plane $\Pi$ viewed in a two-camera system. Show that if the vanishing line of $\Pi$ in one image (i.e., the projection of the line at infinity of $\Pi$ in the image) contains the epipole in that image, then $\Pi$ is parallel to the baseline between the 2 cameras (the line joining the 2 camera centers).
+
+
+
+\section{Fundamental matrices between three cameras (25 Points)}
+In this problem we consider the relationship between $3$ images. Let us denote by $F_{ij}$ the fundamental matrix between image $i$ and $j$ (from 1 to 3), and by $e_{ij}$ the epipole generated by image $j$ in image $i$. We will now show that the $3$ fundamental matrices induced by $3$ cameras are not independent. 
+
+\begin{itemize}
+\item Draw the 3 cameras with $e_{ij}$ labelled.
+\item Show that: $F_{ij}e_{ik} = e_{jk} \times e_{ji}$ for all triplets. (this can be shown purely geometrically, without 
+involved algebra)
+\item Based on these 3 quadratic relations, give a counting argument showing that the 3-camera geometry is characterized by 18 degrees of freedom. And thus conclude that the $3$ fundamental matrices are not independent.
+\end{itemize}
+
+\section{Auto-calibration (20 + 10 + 10)}
+\subsection{General Questions (20 Points)}
+\begin{enumerate}
+\item No equations, use a counting argument only: Suppose that we have
+$m$ images from which we have generated a projective reconstruction.
+Suppose that the intrinsic parameters ($K_i$) are fixed throughout all of
+the images but unknown except for the skew which is known to be $0$.
+How many images are needed to solve for the calibration parameters
+(auto-calibration toward metric reconstruction)?
+\item Can it be solved in a linear fashion in this case?
+\item Suppose that all the calibration parameters in $K$ are allowed to vary
+across the images, but that we know that the two coordinates of the
+principal point are equal in each of the images: $x_o = y_o$. How many
+images are needed to solve the auto-calibration problem?\footnote{FYI, this particular constraint does not correspond to a realistic physical constraint on the cameras, but it is still a valid constraint in theory.}
+\item Can it be solved linearly?
+\item Linear approaches to the auto-calibration problem solve for $L = Q_3Q^T_3$,
+where $Q_3$ is the $4 \times 3$ matrix of the first three columns of the $4 \times 4$
+rectifying matrix $Q$. After solving for $L$, how can we recover $Q_3$?
+\end{enumerate}
+
+\subsection{Extra Credits - Auto-calibration, special case (10 Points)}
+We showed that, given m cameras, if we know the homography of the plane
+at infinity, $H^i_\infty$, between the first image and each image $i$, we can derive
+the relations: $\omega^* = H^i_\infty \omega^* (H^i_\infty)^T$, where $\omega^* = KK^T $, assuming constant
+intrinsic parameters. Although, in principle we can solve for $K$ given enough
+equations, there are cases in which the problem degenerates and an infinite
+family of solutions exist.
+\begin{enumerate}
+\item Does the homography of the plane at infinity between any two images
+depend on the translation between the images?
+\item Show that, if the cameras are in translation only without rotation, the
+auto-calibration problem cannot be solved using the relations based
+on the plane at infinity as shown above (basically no equations, use
+the result of the previous question)\footnote{FYI, in fact, not only we need some amount of rotation to be able to solve unambiguously, we need rotations about at least three different axes. In other words, the camera
+needs to ``move enough'' to be able to self-calibrate unambiguously!}.
+\end{enumerate}
+
+\subsection{Extra Credits - Weird constraints for auto-calibration (10 Points)}
+\begin{enumerate}
+\item How many views $m$ are needed to generate a metric reconstruction assuming that 1) the skew is zero and 2) the
+principal point is constrained to be on a circle of radius $r$ centered at the origin $(0,0)$?
+\item Can it be solved linearly?
+\end{enumerate}
+
+
+
+\end{document}
